@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Reflections</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Past Reflections</h1>
+
+<!-- Create a canvas element for the line chart -->
+<canvas id="reflectionChart" width="800" height="400"></canvas>
+
+<script>
+    // Get the canvas element
+    var ctx = document.getElementById('reflectionChart').getContext('2d');
+
+    // Define data for the line chart
+    var data = {
+        labels: [
+            {% for reflection in past_reflections %}
+                "{{ reflection.timestamp }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Sentiment Score',
+            data: [
+                {% for reflection in past_reflections %}
+                    {{ reflection.sentiment_score }},
+                {% endfor %}
+            ],
+            borderColor: 'blue',
+            borderWidth: 1,
+            fill: false
+        }]
+    };
+
+    // Define chart options
+    var options = {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        hour: 'MMM D, hA'
+                    }
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Timestamp'
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Sentiment Score'
+                }
+            }]
+        }
+    };
+
+    // Create the line chart
+    var reflectionChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+</script>
+
+<h2>Past Reflections</h2>
+
+{% if past_reflections %}
+    <ul>
+        {% for reflection in past_reflections %}
+            <li>
+                <strong>Timestamp:</strong> {{ reflection.timestamp }}<br>
+                <strong>Reflection:</strong> {{ reflection.reflection }}<br>
+                <strong>Sentiment Score:</strong> {{ reflection.sentiment_score }}<br>
+                <strong>Sentiment Label:</strong> {{ reflection.sentiment_label }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No past reflections available.</p>
+{% endif %}
+
+</body>
+</html>

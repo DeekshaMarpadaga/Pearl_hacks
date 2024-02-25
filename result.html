@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Results</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Add CSS for the chart container */
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<section class="buttons">
+        <!-- Home Button -->
+        <a href="{{ url_for('index') }}">
+            <button>Home</button>
+        </a>
+        
+        <!-- Past Reflections Button -->
+        <a href="{{ url_for('past_reflections') }}">
+            <button>Past Reflections</button>
+        </a>
+    </section>
+<div class="container">
+    <header>
+        <h1>Sentiment Analysis Results</h1>
+    </header>
+
+    
+
+    <section class="sentiment-info">
+        <h2>Sentiment Information</h2>
+        <p>Sentiment Score: <span id="sentimentScore">{{ sentiment_score }}</span></p>
+        <p>Sentiment Label: <span id="sentimentLabel">{{ sentiment_label }}</span></p>
+    </section>
+
+    <section class="article-list">
+        <ul id="articleList">
+            {% if sentiment_score < 0 %}
+                <h2>Fun Articles</h2>
+                {% for article in recommend_resources() %}
+                    <li>
+                        <a href="{{ article.url }}">{{ article.url }}</a>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </section>
+    <section class="help_resources">
+        <ul id="help">
+            {% if sentiment_score < -0.5 %}
+                <h2>Help Resources</h2>
+                
+                    <li>
+                        <a href="https://www.cdc.gov/violenceprevention/about/copingwith-stresstips.html">CDC Coping with Stress Tips</a>
+                    </li>
+                    <li>
+                        <a href="https://www.heart.org/en/healthy-living/healthy-lifestyle/stress-management">Heart.org Stress Management</a>
+                    </li>
+                    <li>
+                        <a href="https://www.mentalhealth.org.uk/explore-mental-health/publications/how-manage-and-reduce-stress">Mental Health Foundation - Manage and Reduce Stress</a>
+                    </li>
+                
+            {% endif %}
+        </ul>
+    </section>
+
+    <!-- Add the chart container -->
+    <div class="chart-container">
+        <canvas id="sentimentChart"></canvas>
+    </div>
+</div>
+
+<script>
+    // JavaScript for drawing the chart
+    var canvas = document.getElementById('sentimentChart');
+    var ctx = canvas.getContext('2d');
+
+    // Set the width and height of the canvas
+    canvas.width = 400;
+    canvas.height = 50;
+
+    // Get the sentiment score from the HTML
+    var sentimentScore = parseFloat(document.getElementById('sentimentScore').innerText);
+
+    // Set the color of the bar based on sentiment score
+    var barColor = '';
+    if (sentimentScore > 0.5) {
+        barColor = 'green';
+    } else if (sentimentScore < 0) {
+        barColor = 'red';
+    } else {
+        barColor = 'yellow';
+    }
+
+    // Draw the bar
+    ctx.fillStyle = barColor;
+    ctx.fillRect(0, 0, canvas.width * Math.abs(sentimentScore), canvas.height);
+</script>
+
+</body>
+</html>
